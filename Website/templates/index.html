@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Prediction</h1>
+
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="image-upload">Choose an image:</label>
+        <input type="file" id="image-upload" name="image" accept="image/*" required>
+        <button type="button" onclick="predict()">Predict</button>
+    </form>
+
+    <div id="output"></div>
+
+    <script>
+        function predict() {
+            var input = document.getElementById('image-upload');
+            var file = input.files[0];
+
+            if (file) {
+                var formData = new FormData();
+                formData.append('image', file);
+
+                fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(result => {
+                    document.getElementById('output').innerHTML = 'Prediction result: ' + result;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('output').innerHTML = 'Error occurred during prediction.';
+                });
+            } else {
+                document.getElementById('output').innerHTML = 'Please choose an image before predicting.';
+            }
+        }
+    </script>
+</body>
+</html>
