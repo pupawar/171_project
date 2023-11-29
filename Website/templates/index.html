@@ -3,20 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Prediction</title>
+    <title>Facial Feature Prediction</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+               body {
+            font-family: 'Arial', sans-serif;
             text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #upload-form {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #4caf50;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        label:hover {
+            background-color: #45a049;
+        }
+
+        #image-upload {
+            display: none;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
         }
 
         #output {
             margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #uploaded-image {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
-    <h1>Image Prediction</h1>
+    <h1>Facial Feature Prediction</h1>
 
     <form id="upload-form" enctype="multipart/form-data">
         <label for="image-upload">Choose an image:</label>
@@ -26,6 +85,9 @@
 
     <div id="output"></div>
 
+    <!-- Display uploaded image -->
+    <img id="uploaded-image" src="" alt="Uploaded Image">
+    
     <script>
         function predict() {
             var input = document.getElementById('image-upload');
@@ -42,6 +104,8 @@
                 .then(response => response.text())
                 .then(result => {
                     document.getElementById('output').innerHTML = 'Prediction result: ' + result;
+                    document.getElementById('uploaded-image').src = '/static/uploads/' + result;
+
                 })
                 .catch(error => {
                     console.error('Error:', error);
