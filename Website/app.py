@@ -19,21 +19,48 @@ print(model)
 def index():
     return render_template('index.html')
 
-def show_keypoints(image, keypoints):
-    if image.shape[-1] == 1:
-        image = image.squeeze()
-    # Create a figure and axis
-    fig, ax = plt.subplots(1)
+def sort_pattern(s):
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
+
+def sort_pattern(filename):
+    # Extract numerical part of the filename for sorting, assuming the format 'name_number.jpg'
+    num_part = ''.join(filter(str.isdigit, filename))
+    return int(num_part) if num_part.isdigit() else float('inf')  # Return a large number if no digits found
+
+def load_images(path):
+    images = []
+    file_list = os.listdir(path)
+    sorted_files = sorted(file_list, key=sort_pattern)
+
+    for filename in sorted_files:
+        if filename.endswith(".jpg"):
+            img_path = os.path.join(path, filename)
+            # Open the image and convert it to grayscale
+            img = Image.open(img_path).convert('L')
+            # Convert the grayscale image to RGB for 96 96 3 cases. If 96 96 1, then just comment this line.
+            #img_rgb = img.convert('RGB')# The reason why we convert it to RGB is because
+            # Append the RGB image as a NumPy array to the images list
+            images.append(np.array(img))
+            img.close()
+
+    return images
+
+
+def show(image, keypoints):
+    fig, axes = plt.subplots(1, dpi=100)
+    axes.imshow(image, cmap='gray')
 
     keypoints = keypoints.reshape(-1, 2)
 
-    ax.imshow(image, cmap='gray')
-
-    # Plot facial keypoints
+    # Plot keypoints
     for point in keypoints:
-        ax.plot(point[0], point[1], 'ro')
-    upload_im = UPLOAD_FOLDER + '\prediction.png'
-    plt.savefig(upload_im)
+        x, y = point
+        plt.plot(x, y, 'ro', markersize=5)
+
+    #plt.tight_layout()
+    #plt.show()
+    result_path = UPLOAD_FOLDER + '/prediction.png'
+    plt.savefig(result_path)
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -54,10 +81,13 @@ def predict():
         img_array = np.expand_dims(img_array, axis=-1)
         img_array = np.expand_dims(img_array, axis=0)
         
+        test_img = load_images(UPLOAD_FOLDER)#Here just create a folder called image.
 
-        # Make predictions
-        predictions = model.predict(img_array).flatten()
-        show_keypoints(img_array, predictions)
+        test_img_array = np.stack(test_img, axis=0)  # Stack the list of images
+        x_test = test_img_array.reshape(-1, 96, 96, 1).astype('float64')
+        y_test = model.predict(x_test).astype('float64')
+        image = np.squeeze(x_test, axis=(0, 3))
+        show(image, y_test)
 
         filename = 'prediction.png'
 
