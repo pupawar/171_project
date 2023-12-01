@@ -4,96 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facial Feature Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-               body {
-            font-family: 'Arial', sans-serif;
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('/static/wallpaper.png');
+            background-size: cover;
+            color: #fff;
             text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        h1 {
-            color: #333;
         }
 
         #upload-form {
-            margin-top: 20px;
-            background-color: #fff;
-            padding: 20px;
+            background-color: #000;
+            padding: 20px 40px; /* Adjust padding */
+            display: inline-block; /* Use inline-block for natural width */
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 2px 0; /* Adjust margin */
         }
 
-        label {
+        .button-like, .button-like:active, .button-like:focus {
             display: inline-block;
-            margin-bottom: 10px;
+            background-color: rgb(255, 255, 255);
+            color: #000;
+            padding: 10px 40px;
             font-size: 16px;
-            color: #fff;
-            background-color: #4caf50;
-            padding: 10px 20px;
-            border-radius: 4px;
+            border: none;
+            border-radius: 2px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin: 2px auto;
+            width: 80%;
+            max-width: 300px;
+            text-decoration: none;
+            outline: none;
+            box-sizing: border-box;
+            text-align: center;
         }
 
-        label:hover {
-            background-color: #45a049;
+        .button-like:hover {
+            background-color: #aaa;
         }
 
         #image-upload {
             display: none;
         }
 
-        button {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 20px;
+        #uploaded-image {
+            background-color: #000;
+            display: block;
+            padding: 10px;
+        }
+
+        .scaled-image {
+            display: block;
+            margin: 20px auto;
+            width: 560px;
+            height: 560px;
+        }
+
+        footer {
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #ffffff;
+        }
+
+        #upload-form {
+            background-color: #1b112e; /* Updated to new hex color */
+            padding: 10px 10px; /* Tighter padding as previously set */
+            display: inline-block;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 2px 0;
+        }
+
+        .button-like, .button-like:active, .button-like:focus {
+            display: inline-block;
+            background-color: #aaa;
+            color: #000;
+            padding: 10px 20px; /* Adjusted padding */
             font-size: 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 2px;
             cursor: pointer;
             transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        #output {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
+            margin: 2px 5px; /* Reduced margin to bring buttons closer */
+            width: auto; /* Set width to auto for natural button width */
+            max-width: 300px;
+            text-decoration: none;
+            outline: none;
+            box-sizing: border-box;
+            text-align: center;
         }
 
         #uploaded-image {
-            max-width: 100%;
-            margin-top: 20px;
+            background-color: #1b112e; /* Updated to new hex color */
+            display: block;
+            padding: 10px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5em; /* Size of the main heading */
+            margin-top: 30px;
+        }
+
+        #output {
+            font-size: 2.5em; /* Match the font size of the main heading */
+            color: #fff; /* Match the font color of the main heading */
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Facial Feature Prediction</h1>
 
-    <form id="upload-form" enctype="multipart/form-data">
-        <label for="image-upload">Choose an image:</label>
+    <div id="upload-form">
         <input type="file" id="image-upload" name="image" accept="image/*" required>
-        <button type="button" onclick="predict()">Predict</button>
-    </form>
+        <label for="image-upload" class="button-like">Choose an image</label>
+        <button type="button" class="button-like" onclick="predict()">Predict</button>
+    </div>
 
     <div id="output"></div>
+    <img id="uploaded-image" class="scaled-image" src="" alt="Uploaded Image" style="display: none;">
 
-    <!-- Display uploaded image -->
-    <img id="uploaded-image" src="" alt="Uploaded Image">
-    
+    <footer>
+        Made with ❤️ by Walid, Emily, Jason, Parth
+    </footer>
+
     <script>
         function predict() {
             var input = document.getElementById('image-upload');
             var file = input.files[0];
 
             if (file) {
+                // Clear the previous results
+                document.getElementById('output').innerHTML = '';
+                document.getElementById('uploaded-image').style.display = 'none';
+
                 var formData = new FormData();
                 formData.append('image', file);
 
@@ -103,9 +153,14 @@
                 })
                 .then(response => response.text())
                 .then(result => {
-                    document.getElementById('output').innerHTML = 'Prediction result: ' + result;
-                    document.getElementById('uploaded-image').src = '/static/uploads/' + result;
+                    // Append a timestamp to the image URL to prevent caching
+                    var imagePath = '/static/uploads/' + result + '?t=' + new Date().getTime();
+                    document.getElementById('output').innerHTML = 'Prediction Result';
+                    document.getElementById('uploaded-image').src = imagePath;
+                    document.getElementById('uploaded-image').style.display = 'block';
 
+                    // Clear the file input for a new prediction
+                    input.value = '';
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -115,6 +170,7 @@
                 document.getElementById('output').innerHTML = 'Please choose an image before predicting.';
             }
         }
+
     </script>
 </body>
 </html>
