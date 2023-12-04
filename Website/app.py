@@ -12,10 +12,10 @@ import webbrowser
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = r'C:\Users\wbagh\Desktop\171\171_project\Website\static\uploads'
+UPLOAD_FOLDER = 'Website/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-model = load_model(r'C:\Users\wbagh\Desktop\171\171_project\Website\NewResNet50.h5')
+model = load_model('Website/NewResNet50.h5')
 
 @app.route('/')
 def index():
