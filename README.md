@@ -8,5 +8,5 @@ See each notebook/code file for more details on how to run each individual model
 ## REPORT
 Documented report file is included.
 
-## DEMO
-This is the [link](https://www.youtube.com/watch?v=vu-Dn6RLFT8) to our demo.
+## DEMO & WEBSITE
+This is the [link](https://www.youtube.com/watch?v=vu-Dn6RLFT8) to our demo. See the source code of our website in the folder for the website files.
